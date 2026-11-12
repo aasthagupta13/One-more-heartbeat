@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>One More Heartbeat: Blood Donation Drive Organizer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+:root{--bg:#fbf6f4;--surface:#fff;--ink:#2a1417;--mute:#70595c;--line:#e8d9d6;--red:#a31621;--red-ink:#fff;--tint:#f7e3e1;--teal:#1d6b73;--ok:#1d6b43;--warn:#9a5b00;--bad:#a31621;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a0f11;--surface:#261619;--ink:#f6e9e7;--mute:#bfa5a8;--line:#43292d;--red:#e5545e;--red-ink:#1a0f11;--tint:#3a1c20;--teal:#5fc0c9;--ok:#6fcf97;--warn:#f2b45a;--bad:#ff8088;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1a0f11;--surface:#261619;--ink:#f6e9e7;--mute:#bfa5a8;--line:#43292d;--red:#e5545e;--red-ink:#1a0f11;--tint:#3a1c20;--teal:#5fc0c9;--ok:#6fcf97;--warn:#f2b45a;--bad:#ff8088;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 "Source Sans 3",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.1;margin:0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 18px 60px}
+header{padding:34px 0 18px}
+header h1{font-size:clamp(2rem,6vw,3.4rem);font-weight:800;letter-spacing:-.02em;max-width:20ch}
+header p{color:var(--mute);max-width:56ch;margin:10px 0 0}
+nav{display:flex;gap:6px;overflow-x:auto;border-bottom:2px solid var(--line);margin:10px 0 24px}
+nav[hidden]{display:none}nav button{background:none;border:0;padding:10px 14px;cursor:pointer;white-space:nowrap;font-weight:600;color:var(--mute);border-bottom:3px solid transparent;margin-bottom:-2px}
+nav button[aria-selected=true]{color:var(--red);border-color:var(--red)}
+.badge{background:var(--red);color:var(--red-ink);border-radius:99px;font-size:.75rem;padding:1px 7px;margin-left:4px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.bar input,.bar select,.f input,.f select{background:var(--surface);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;min-width:0}
+.bar input{flex:1 1 220px}
+.chip{background:var(--surface);border:1.5px solid var(--line);border-radius:99px;padding:7px 14px;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--red);border-color:var(--red);color:var(--red-ink)}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(310px,1fr))}
+.camp{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;display:grid;grid-template-columns:78px 1fr;overflow:hidden}
+.date{background:var(--red);color:var(--red-ink);text-align:center;padding:14px 4px;font-family:"Bricolage Grotesque",sans-serif}
+.date b{display:block;font-size:2rem;line-height:1}.date span{font-size:.85rem}
+.camp .body{padding:14px 16px}
+.camp h3{font-size:1.15rem}
+.meta{color:var(--mute);font-size:.92rem;margin:4px 0 10px}
+.meter{height:8px;background:var(--tint);border-radius:9px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--teal)}
+.meter.full i{background:var(--bad)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.small{font-size:.88rem;color:var(--mute)}
+.btn{background:var(--red);color:var(--red-ink);border:0;border-radius:8px;padding:9px 16px;font-weight:600;cursor:pointer}
+.btn.alt{background:none;color:var(--red);border:1.5px solid var(--red)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.panel{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:20px;max-width:640px}
+.f{display:grid;gap:14px}
+.f label{display:grid;gap:4px;font-weight:600;font-size:.95rem}
+.f .two{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+.check{display:flex;gap:10px;align-items:center;font-weight:400!important;grid-auto-flow:column;justify-content:start}
+.f h3{font-size:1.05rem;margin-top:6px}.res{margin-top:16px;padding:14px 16px;border-radius:10px;border-left:6px solid}
+.res.ok{background:var(--tint);border-color:var(--ok)}.res.no{background:var(--tint);border-color:var(--bad)}
+.res ul{margin:6px 0 0;padding-left:20px}
+.inv{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.unit{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px}
+.unit h3{font-size:2rem;color:var(--red)}
+.unit .n{font-size:1.4rem;font-weight:600}
+.st{font-weight:600;font-size:.9rem}.st.crit{color:var(--bad)}.st.low{color:var(--warn)}.st.good{color:var(--ok)}
+.adj{display:flex;gap:6px}.adj button{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--line);background:none;cursor:pointer}
+.alerts{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:8px;max-width:640px}
+.alerts li{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;gap:10px}
+.alerts .acc{color:var(--ok);font-weight:600}.alerts .dec{color:var(--mute)}.alerts .snd{color:var(--warn)}
+dialog{border:0;border-radius:14px;padding:22px;width:min(440px,92vw);background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.on{opacity:1}
+.empty{padding:28px;border:2px dashed var(--line);border-radius:14px;color:var(--mute)}
+.brand{font:800 1.6rem/1 "Bricolage Grotesque",system-ui,sans-serif;color:var(--red);margin-bottom:16px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;flex:none}.beat{width:64px;height:26px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.beat path{stroke-dasharray:100;animation:beat 2.2s ease-in-out infinite}@keyframes beat{0%{stroke-dashoffset:100}55%,100%{stroke-dashoffset:0}}@media (prefers-reduced-motion:reduce){.beat path{animation:none;stroke-dasharray:none}}.hero{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-bottom:20px}
+.role{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:20px;text-align:left;cursor:pointer;display:grid;gap:6px}
+.role:hover{border-color:var(--red)}.role h3{font-size:1.35rem;color:var(--red)}.role span{color:var(--mute)}
+.strip{background:var(--tint);border-radius:12px;padding:14px 18px;margin-bottom:12px}
+.tag{display:inline-block;background:var(--bad);color:var(--red-ink);border-radius:6px;padding:1px 8px;font-size:.8rem;font-weight:600;margin-left:6px}
+.tag.q{background:var(--teal)}
+.sl{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
+.bk{margin:6px 0 0;padding-left:18px}
+@media (max-width:480px){.f .two{grid-template-columns:1fr}.beat{width:36px}.brand{font-size:1.25rem;gap:8px}.logo{width:34px;height:34px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.btn{border-radius:99px;padding:10px 20px}.chip[aria-pressed=true]{background:var(--red);color:var(--red-ink);border-color:var(--red)}
+.grid{gap:22px}.role,.panel,.unit,.strip{border-radius:20px}.role,.panel,.unit{border:1px solid var(--line);box-shadow:0 6px 22px rgba(120,60,70,.06)}
+.pghead h2{font-size:clamp(1.6rem,4vw,2.2rem);font-weight:700}.pghead p{color:var(--mute);margin:6px 0 22px;max-width:52ch}
+.fbar{display:grid;gap:12px;margin-bottom:12px}.fbar input,.fbar select{background:var(--surface);border:1.5px solid var(--line);border-radius:99px;padding:11px 18px;min-width:0}
+.chips,.sels{display:flex;flex-wrap:wrap;gap:8px}.count{margin:6px 0 16px}
+.cc{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 8px 28px rgba(120,60,70,.08);display:flex;flex-direction:column;gap:10px;transition:transform .2s,box-shadow .2s}
+.cc:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(120,60,70,.14)}
+.cc-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.dchip{background:var(--red);color:var(--red-ink);border-radius:99px;padding:4px 14px;font-weight:600}
+.cc-when{color:var(--mute);font-size:.92rem}.cc h3{font-size:1.3rem;font-weight:700}.cc-meta{margin:0;color:var(--mute);font-size:.95rem}
+.cc .meter{height:6px;margin-top:4px}.cc-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+.cc .tag{margin:0}
+.bk{list-style:none;padding:0}.bk li{padding:6px 0;border-bottom:1px solid var(--line);font-size:.93rem}.bk .btn{padding:3px 12px;font-size:.85rem;margin-left:6px}
+.unit.sel{border-color:var(--red);box-shadow:0 0 0 3px var(--tint)}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+nav,.chips{scrollbar-width:none}nav::-webkit-scrollbar,.chips::-webkit-scrollbar{display:none}
+.cc-foot .btn{background:transparent;color:var(--red);border:.5px solid var(--red);padding:6px 16px;font-size:.92rem;font-weight:500}
+.cc-foot .btn:not(.alt){background:var(--tint)}
+.cc-foot .btn:hover{background:var(--tint)}
+.cc-foot .btn:disabled{border-color:var(--line);color:var(--mute);background:transparent}
+
+dialog{width:min(580px,94vw);max-height:90vh;overflow:auto}
+.sr{position:absolute;left:-9999px}
+.map{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:16px}.pin{cursor:pointer}.pin:hover path,.pin:focus-visible path{fill:var(--teal)}.pin:focus-visible{outline:none}
+.pinno{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--red);color:var(--red-ink);font-size:.8rem;margin-right:8px;vertical-align:2px}
+.hb{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:center;padding:5px 0}.hb .meter{height:10px}
+.qf{border:0;border-bottom:1px solid var(--line);padding:0 0 8px;margin:0;min-width:0}.qf legend{font-weight:600;padding:0;margin-bottom:4px;font-size:.95rem}
+.f .qf label{display:inline-flex;gap:6px;align-items:center;font-weight:400;margin-right:16px}
+.f .qf .bgc{font-weight:600;margin:0}.bgc{position:relative}.bgc input{position:absolute;opacity:0;pointer-events:none}
+.bgc:has(input:checked){background:var(--red);color:var(--red-ink);border-color:var(--red)}.bgc:has(input:focus-visible){outline:3px solid var(--teal);outline-offset:2px}
+.crit{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:6px}.crit li{display:grid;grid-template-columns:22px 1fr auto 44px;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:.93rem}
+.crit .p{border-left:5px solid var(--ok)}.crit .f{border-left:5px solid var(--bad)}.crit .p em,.crit .p .ic{color:var(--ok)}.crit .f em,.crit .f .ic{color:var(--bad)}.crit em{font-style:normal;font-weight:700}
+.bhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 6px}
+.live{font-size:.9rem;color:var(--mute);display:inline-flex;align-items:center;gap:6px}.live i{width:10px;height:10px;border-radius:50%;background:var(--ok);animation:pulse 1.6s infinite}@keyframes pulse{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.live i{animation:none}}
+.tw{overflow-x:auto}.mx{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:14px;min-width:520px}
+.mx th,.mx td{padding:10px 12px;text-align:center;border-bottom:1px solid var(--line)}.mx th:first-child{text-align:left}.mx td b{display:block;font-size:1.2rem}.mx small{display:block;font-size:.78rem;font-weight:600}
+.mx td.crit{background:var(--tint);color:var(--bad)}.mx td.low{color:var(--warn)}.mx td.good{color:var(--ok)}.mx .meter{margin-top:4px}
+
+/* ===== Beat: site assistant ===== */
+.wrap{padding-bottom:100px}
+.cb-fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;display:flex;align-items:center;gap:8px;background:var(--red);color:var(--red-ink);border:0;border-radius:99px;padding:12px 20px 12px 16px;font-weight:600;cursor:pointer;box-shadow:0 10px 28px rgba(120,20,30,.35)}
+.cb-fab[hidden]{display:none}
+.cb-fab svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cb-p{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:55;width:min(390px,calc(100vw - 24px));height:min(610px,calc(100dvh - 32px));display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 50px rgba(60,10,20,.28);overflow:hidden}
+.cb-p[hidden]{display:none}
+.cb-h{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--red);color:var(--red-ink);padding:14px 16px}
+.cb-h b{font:700 1.15rem/1.1 "Bricolage Grotesque",system-ui,sans-serif;display:block}
+.cb-h span{font-size:.82rem;opacity:.9}
+.cb-h button{background:none;border:0;color:inherit;font-size:1.6rem;line-height:1;cursor:pointer;width:36px;height:36px;border-radius:50%}
+.cb-h button:hover{background:rgba(255,255,255,.18)}
+.cb-m{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.cb-b{max-width:90%;padding:10px 14px;border-radius:16px;font-size:.95rem;line-height:1.45;word-wrap:break-word}
+.cb-b.bot{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:5px;align-self:flex-start}
+.cb-b.me{background:var(--red);color:var(--red-ink);border-bottom-right-radius:5px;align-self:flex-end}
+.cb-b ul{margin:6px 0 0;padding-left:18px}.cb-b p{margin:0 0 6px}.cb-b p:last-child{margin:0}
+.cb-b .cb-item{padding:8px 0;border-top:1px solid var(--line)}.cb-b .cb-item:first-of-type{border-top:0}
+.cb-a{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.cb-a button,.cb-q button{background:var(--tint);color:var(--red);border:1px solid var(--red);border-radius:99px;padding:5px 12px;font-size:.86rem;font-weight:600;cursor:pointer}
+.cb-a button:hover,.cb-q button:hover{background:var(--red);color:var(--red-ink)}
+.cb-typing{display:inline-flex;gap:4px;padding:4px 0}.cb-typing i{width:7px;height:7px;border-radius:50%;background:var(--mute);animation:cbd 1s infinite}.cb-typing i:nth-child(2){animation-delay:.15s}.cb-typing i:nth-child(3){animation-delay:.3s}
+@keyframes cbd{0%,80%,100%{opacity:.25}40%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.cb-typing i{animation:none}}
+.cb-q{display:flex;gap:6px;overflow-x:auto;padding:8px 12px;border-top:1px solid var(--line);background:var(--surface);scrollbar-width:none}
+.cb-q::-webkit-scrollbar{display:none}.cb-q button{white-space:nowrap;flex:none}
+.cb-f{display:flex;gap:8px;padding:10px 12px 12px;background:var(--surface)}
+.cb-f input{flex:1;min-width:0;background:var(--bg);border:1.5px solid var(--line);border-radius:99px;padding:10px 16px}
+.cb-note{font-size:.76rem;color:var(--mute);text-align:center;padding:0 12px 8px;background:var(--surface)}
+@media (max-width:480px){.cb-p{right:8px;left:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));width:auto;height:min(80dvh,640px)}.cb-fab span{display:none}.cb-fab{padding:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="brand"><svg class="logo" viewBox="0 0 64 64" role="img" aria-label="One More Heartbeat logo"><path fill="currentColor" d="M32 4C32 4 12 26 12 40a20 20 0 0 0 40 0C52 26 32 4 32 4Z"/><path style="fill:var(--bg)" d="M32 50C24 44 20 40 20 35.5a6 6 0 0 1 12-1.5 6 6 0 0 1 12 1.5C44 40 40 44 32 50Z"/></svg>One More Heartbeat<svg class="beat" viewBox="0 0 64 26" aria-hidden="true"><path pathLength="100" d="M2 13 H18 L23 4 L30 22 L35 13 H62"/></svg></div>
+<h1>Be the reason someone’s story doesn’t end here</h1>
+<p>Book a slot, skip the queue, and find donors fast in an emergency.</p>
+</header>
+<nav role="tablist" id="tabs"></nav>
+<main id="view"></main>
+</div>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+const G=["A+","A-","B+","B-","AB+","AB-","O+","O-"];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const day=n=>{const d=new Date();d.setDate(d.getDate()+n);d.setHours(0,0,0,0);return d};
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const pd=t=>{const[y,m,d]=t.split("-");return new Date(+y,m-1,+d)};
+const seed=[
+{id:"c1",name:"Seva Youth Club Camp",venue:"Community Hall, Ward 4",off:2,s:9,e:14,org:"Seva Youth Club",cap:8,focus:["O-","B-"],desc:"Neighbourhood camp with refreshments and a doctor on site."},
+{id:"c2",name:"College Campus Drive",venue:"Student Union Block",off:5,s:10,e:16,org:"Rotaract Chapter",cap:10,focus:["A-","AB-"],desc:"Student-run drive. First-time donors are welcome."},
+{id:"c3",name:"Weekend Neighbourhood Camp",venue:"Green Park Pavilion",off:9,s:8,e:13,org:"Lifeline NGO",cap:8,focus:["B-","O-"],desc:"Early morning weekend camp with walk-in help desk."},
+{id:"c4",name:"Market Association Drive",venue:"Central Market Hall",off:14,s:11,e:17,org:"Traders' Welfare Society",cap:6,focus:["AB-"],desc:"Organised by local traders for shop staff and shoppers."},
+{id:"c5",name:"Emergency Stock Camp",venue:"District Civil Hospital Lawn",off:20,s:9,e:15,org:"Red Cross Volunteers",cap:12,focus:["O-","A-","B-","AB-"],desc:"Large camp to rebuild low stock of rare groups."},
+{id:"c6",name:"Winter Warm-Up Drive",venue:"Sports Complex Hall",off:34,s:9,e:14,org:"Youth Sports Club",cap:8,focus:["O-","A-"],desc:"A winter drive, when donations usually drop."},
+{id:"c7",name:"Year-End Giving Camp",venue:"Public Library Hall",off:52,s:10,e:15,org:"Lifeline NGO",cap:10,focus:["B-","AB-"],desc:"A year-end camp for families and first-time donors."},
+{id:"c8",name:"New Year Blood Drive",venue:"Community Centre",off:68,s:9,e:13,org:"Seva Youth Club",cap:8,focus:["O-","B-","A-"],desc:"Start the year with a donation."},
+{id:"c9",name:"Spring Campus Camp",venue:"Engineering College Auditorium",off:100,s:10,e:16,org:"Rotaract Chapter",cap:12,focus:["AB-"],desc:"Large campus drive with student volunteers."}
+].map(c=>({...c,date:iso(day(c.off))}));
+let custom=[];try{custom=JSON.parse(localStorage.getItem("bdoc")||"[]")}catch(e){}
+const allCamps=()=>[...seed,...custom].map(c=>({...c,d:pd(c.date)})).filter(c=>c.d>=day(0)).sort((a,b)=>a.d-b.d);
+const hrs=c=>Array.from({length:c.e-c.s},(_,i)=>c.s+i);
+const fmtH=h=>(h%12||12)+":00 "+(h<12?"am":"pm");
+const fmtD=d=>d.toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"});const _x=d=>d.toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"});
+const base=(c,h)=>(c.id.charCodeAt(1)*7+h*3)%(c.cap-1);
+const BK0=[{id:"b1",name:"Civil Hospital Blood Bank",area:"Civil Lines",km:1.8,hrs:"24 hours",inv:{"A+":14,"A-":4,"B+":18,"B-":2,"AB+":5,"AB-":1,"O+":22,"O-":3}},
+{id:"b2",name:"Red Cross Blood Centre",area:"Model Town",km:3.6,hrs:"8 am to 8 pm",inv:{"A+":12,"A-":3,"B+":14,"B-":3,"AB+":4,"AB-":1,"O+":18,"O-":3}},
+{id:"b3",name:"Lifeline Community Blood Bank",area:"Market Road",km:6.2,hrs:"9 am to 6 pm",inv:{"A+":8,"A-":2,"B+":9,"B-":1,"AB+":3,"AB-":1,"O+":12,"O-":2}}];
+let S={tab:"home",q:"",f:"all",sort:"date",role:"",fg:"",ag:"",reqs:[],banks:JSON.parse(JSON.stringify(BK0)),g:"",m:"",appts:[],inv:{"A+":34,"A-":9,"B+":41,"B-":6,"AB+":12,"AB-":3,"O+":52,"O-":8},theme:null,allg:false,upd:Date.now()};
+try{const x=JSON.parse(localStorage.getItem("bdo")||"null");if(x){S.appts=x.appts||[];S.banks=x.banks||S.banks;S.reqs=x.reqs||[]}}catch(e){}
+const syncInv=()=>{G.forEach(g=>S.inv[g]=S.banks.reduce((t,b)=>t+b.inv[g],0));S.upd=Date.now()};syncInv();
+const save=()=>{try{localStorage.setItem("bdo",JSON.stringify({appts:S.appts,banks:S.banks,reqs:S.reqs}))}catch(e){}};
+const taken=(c,h)=>base(c,h)+S.appts.filter(a=>a.camp===c.id&&a.h===h).length;
+const left=c=>hrs(c).reduce((t,h)=>t+c.cap-taken(c,h),0);
+const total=c=>hrs(c).length*c.cap;
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("on"),2600)}
+
+const BG5=["A+","B+","O+","AB+","O-"],CAPS={b1:100,b2:80,b3:50};
+const POS={c1:[150,115],c2:[430,75],c3:[255,250],c4:[330,175],c5:[500,240],c6:[85,245],c7:[170,55],c8:[555,150],c9:[575,60]};
+const pos=c=>POS[c.id]||(()=>{let n=7;for(const ch of c.id)n=(n*31+ch.charCodeAt(0))%9973;return[70+n%500,50+(n*7)%230]})();
+const gmap=c=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(c.venue);
+function mapSvg(cs,hi,link){
+return `<svg class="map" viewBox="0 0 640 340" role="group" aria-label="Schematic map of camp venues"><rect width="640" height="340" rx="16" fill="var(--tint)"/><path d="M0 295C140 255 230 335 370 295S560 245 640 285" stroke="var(--teal)" stroke-opacity=".3" stroke-width="22" fill="none"/><rect x="215" y="205" width="105" height="62" rx="14" fill="var(--ok)" fill-opacity=".2"/><g stroke="var(--surface)" stroke-width="10" stroke-linecap="round" fill="none"><path d="M0 150H640"/><path d="M205 0V340"/><path d="M425 0V340"/><path d="M0 50L640 230"/></g><text x="14" y="26" font-size="12" fill="var(--mute)">Schematic map, not to scale</text><text x="626" y="26" font-size="13" font-weight="700" fill="var(--mute)" text-anchor="end">N ↑</text>${cs.map((c,i)=>{const[x,y]=pos(c);return `<g class="pin" ${link?`data-det="${c.id}" tabindex="0" role="button"`:""} aria-label="${hi?"":(i+1)+". "}${esc(c.name)}, ${fmtD(c.d)}" transform="translate(${x},${y})${c.id===hi?" scale(1.35)":""}"><title>${esc(c.name)}, ${esc(c.venue)}, ${fmtD(c.d)}</title><path d="M0 0C-10-14-12-20-12-26a12 12 0 1 1 24 0C12-20 10-14 0 0Z" fill="var(--red)"/><circle cy="-26" r="8.5" fill="var(--red-ink)"/><text y="-22" text-anchor="middle" font-size="11" font-weight="700" fill="var(--red)">${hi?"":i+1}</text></g>`}).join("")}</svg>`}
+const slotInfo=(c,h)=>{const t=taken(c,h),r=c.cap-t;return{t,r,tag:r<=0?null:h>=13&&h<=15&&t<=c.cap/2?["Lunch lull, donors needed","q"]:t<=c.cap/4?["Quiet","q"]:r<=2?["Almost full",""]:null}};
+const slotLine=c=>{const o=hrs(c).filter(h=>c.cap-taken(c,h)>0);return o.length?`Open: ${o.slice(0,3).map(fmtH).join(", ")}${o.length>3?` +${o.length-3} more`:""}`:"No open slots"};
+const ago=()=>{const x=Math.floor((Date.now()-S.upd)/1000);return x<5?"just now":x<60?x+" s ago":Math.floor(x/60)+" min ago"};
+setInterval(()=>{const u=$("#upd");if(u)u.textContent=ago()},1000);
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches&&e.target.matches("g[data-det]"))detDlg(e.target.dataset.det)});
+const TABS=[["home","Home"],["camps","Upcoming camps"],["elig","Am I eligible?"],["inv","Blood stock"],["alert","Emergency alert"],["mine","My appointments"],["reqs","My requests"],["org","Create a camp"],["mycamps","My camps"]];
+const OL={inv:"Stock & planning",org:"Create a camp",mycamps:"My camps"};const NL={inv:"Find blood",alert:"Find donors urgently",reqs:"My reservations"};const ROLES={donor:["home","camps","elig","mine"],need:["home","inv","alert","reqs"],org:["home","mycamps","org","inv"]};
+function renderTabs(){$("#tabs").hidden=!S.role;$("#tabs").innerHTML=TABS.filter(([k])=>S.role?ROLES[S.role].includes(k)&&(k!=="reqs"||S.reqs.length>0):k==="home").map(([k,l])=>`<button role="tab" aria-selected="${S.tab===k}" data-t="${k}">${(S.role==="need"?NL[k]:S.role==="org"?OL[k]:"")||l}${k==="mine"&&S.appts.length?`<span class="badge">${S.appts.length}</span>`:""}</button>`).join("")}
+$("#tabs").onclick=e=>{const b=e.target.closest("[data-t]");if(b){S.tab=b.dataset.t;if(S.tab==="home")S.role="";render()}};
+
+const crit=()=>G.filter(g=>S.inv[g]<20);
+const urg=c=>(c.focus||[]).filter(g=>S.inv[g]<20);
+const cardHtml=(c,i)=>{const l=left(c),t=total(c),p=Math.round((t-l)/t*100),u=urg(c);
+return `<article class="cc"><div class="cc-top"><span class="dchip">${c.d.getDate()} ${c.d.toLocaleDateString("en-IN",{month:"short"})}</span><span class="cc-when">${c.d.toLocaleDateString("en-IN",{weekday:"long"})}, ${fmtH(c.s)} to ${fmtH(c.e)}</span>${u.length?`<span class="tag">Needs ${u.join(", ")}</span>`:""}</div>
+<h3>${i?`<span class="pinno">${i}</span>`:""}${esc(c.name)}</h3><p class="cc-meta">${esc(c.venue)}<br>Organiser: ${esc(c.org)}</p><div class="small">${slotLine(c)}</div>
+<div class="meter ${l?"":"full"}" role="img" aria-label="${p}% of slots booked"><i style="width:${p}%"></i></div>
+<div class="cc-foot"><span class="small">${l?`${l} of ${t} slots open`:"All slots booked"}</span><span><button class="btn alt" data-det="${c.id}">Details</button> <button class="btn" data-book="${c.id}" ${l?"":"disabled"}>Book a slot</button></span></div></article>`};
+function homeView(){const c=crit().sort((x,y)=>S.inv[x]-S.inv[y]),t=c[0];
+return `<div class="hero"><button class="role" data-role="donor"><h3>I want to donate</h3><span>Find a camp, book a slot and check your eligibility.</span></button>
+<button class="role" data-role="need"><h3>I need blood</h3><span>See stock by blood group or send an emergency alert.</span></button>
+<button class="role" data-role="org"><h3>I organise camps</h3><span>Create camps, set slot limits and track bookings.</span></button></div>
+${t?`<button class="strip" data-urg="${t}" style="display:block;width:100%;text-align:left;border:0;cursor:pointer;font:inherit;color:inherit"><b>${t} blood is running low (${S.inv[t]} units left).</b> Book a slot at an upcoming camp.</button>`:`<div class="strip"><b>All blood groups are well stocked</b></div>`}
+`}
+function campsView(){
+  const wk=day(7);
+  let list=allCamps().filter(c=>(c.name+c.venue+c.org).toLowerCase().includes(S.q));
+  if(S.f==="week")list=list.filter(c=>c.d<=wk);
+  if(S.f==="spots")list=list.filter(c=>left(c)>0);
+  if(S.f==="urgent")list=list.filter(c=>urg(c).length);
+  if(S.m)list=list.filter(c=>iso(c.d).slice(0,7)===S.m);
+  if(S.g)list=list.filter(c=>!(c.focus||[]).length||c.focus.includes(S.g));
+  if(S.sort==="left")list.sort((a,b)=>left(b)-left(a));
+  const mopts=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+i);const v=iso(d).slice(0,7);return `<option value="${v}" ${S.m===v?"selected":""}>${d.toLocaleDateString("en-IN",{month:"long",year:"numeric"})}${i===0?" (this month)":i===1?" (next month)":""}</option>`}).join("");
+  return `<div class="pghead"><h2>Upcoming camps</h2><p>Choose a day and a time that suits you. Each hour has limited places, so everyone gets a short, calm visit.</p></div>
+  <div class="fbar"><input id="q" type="search" placeholder="Search by camp, venue or organiser" value="${esc(S.q)}" aria-label="Search camps">
+  <div class="chips">${[["all","All"],["week","This week"],["spots","Slots open"],["urgent","Urgent need"]].map(([k,l])=>`<button class="chip" data-f="${k}" aria-pressed="${S.f===k}">${l}</button>`).join("")}</div>
+  <div class="sels"><select id="mo" aria-label="Filter by month"><option value="">Any month</option>${mopts}</select>
+  <select id="sg" aria-label="Filter by blood group"><option value="">Any blood group</option>${G.map(g=>`<option ${S.g===g?"selected":""}>${g}</option>`).join("")}</select>
+  <select id="so" aria-label="Sort camps"><option value="date" ${S.sort==="date"?"selected":""}>Sort: nearest date</option><option value="left" ${S.sort==="left"?"selected":""}>Sort: most slots open</option></select></div></div>
+  <div class="small count">Showing ${list.length} camp${list.length===1?"":"s"} ${(S.q||S.f!=="all"||S.g||S.m)?'<button class="chip" id="clr">Clear filters</button>':""}</div>
+  ${list.length?`<h3 style="margin:0 0 8px">Venue map</h3><p class="small" style="margin:0 0 10px">Numbers match the camps below. Tap a pin for details.</p>${mapSvg(list,"",true)}<div style="height:18px"></div>`:""}<div class="grid">${list.map((c,i)=>cardHtml(c,i+1)).join("")}</div>
+  ${list.length?"":`<div class="empty">${S.m?"No camps are scheduled in that month yet. Try another month or clear the filters.":"No camps match. Clear the search or choose \"All\"."}</div>`}`;
+}
+function detDlg(id){
+  const c=allCamps().find(x=>x.id===id),u=urg(c);
+  $("#dlg").innerHTML=`<h2>${esc(c.name)}</h2><div class="meta">${fmtD(c.d)}, ${fmtH(c.s)} to ${fmtH(c.e)}<br>${esc(c.venue)}<br>Organiser: ${esc(c.org)}</div><p>${esc(c.desc||"Open to all healthy adult donors.")}</p>
+  ${u.length?`<p><b>Most needed:</b> ${u.join(", ")}</p>`:""}
+  ${mapSvg([c],c.id,false)}<p style="margin:8px 0"><a href="${gmap(c)}" target="_blank" rel="noopener" style="color:var(--red)">Open ${esc(c.venue)} in Google Maps</a></p>
+  <h3 style="margin:14px 0 6px;font-size:1.05rem">Time slots</h3><div>${hrs(c).map(h=>{const{t,r,tag}=slotInfo(c,h);return `<div class="hb"><span>${fmtH(h)}</span><div class="meter ${r?"":"full"}"><i style="width:${t/c.cap*100}%"></i></div><span class="small">${r>0?r+" left":"Full"}${tag?` <span class="tag ${tag[1]}">${tag[0]}</span>`:""}</span></div>`}).join("")}</div>
+  <div class="row"><button class="btn alt" data-t="elig" data-close="1">Check eligibility first</button><span><button class="btn alt" id="bx">Close</button> <button class="btn" data-book="${c.id}" data-close="1" ${left(c)?"":"disabled"}>Book a slot</button></span></div>`;
+  $("#dlg").showModal();$("#bx").onclick=()=>$("#dlg").close();
+}
+function screen(v){
+  const ds=v.ds===""||v.ds==null?null:+v.ds,noH=v.h===""||v.h==null||isNaN(v.h);
+  const rules=[
+   {l:"Age 18 to 65",v:v.a+" years",ok:v.a>=18&&v.a<=65,fix:v.a<18?"You must be at least 18 years old.":"Donors must be 65 years or younger."},
+   {l:"Weight above 45 kg",v:v.w+" kg",ok:v.w>45,fix:"Weight must be above 45 kg."},
+   {l:"Haemoglobin above 12.5 g/dL",v:noH?"Tested at camp":v.h+" g/dL",ok:noH||v.h>12.5,fix:"Haemoglobin must be above 12.5 g/dL. Iron-rich food can help."},
+   {l:"90 days since last donation",v:ds===null?"Never donated":ds+" days ago",ok:ds===null||ds>=90,fix:`Wait ${90-ds} more day${90-ds>1?"s":""}. A 90-day gap is needed.`,d:90-ds}];
+  const tm=[],pm=[];
+  TMP.forEach(x=>{if(v.yes.has(x[0]))tm.push({t:x[3],d:x[2]})});PRM.forEach(x=>{if(v.yes.has(x[0]))pm.push({t:x[2]})});(v.extra||[]).forEach(t=>tm.push({t}));
+  const fails=rules.filter(r=>!r.ok),days=[...fails.map(r=>r.d||0),...tm.map(x=>x.d||0)].filter(Boolean);
+  return{rules,tm,pm,fails,mx:days.length?Math.max(...days):0,ok:!fails.length&&!tm.length&&!pm.length};
+}
+function resHtml(r,cta){
+  const li=l=>l.map(x=>`<li>${x}</li>`).join(""),
+  tbl=`<ul class="crit">${r.rules.map(x=>`<li class="${x.ok?"p":"f"}"><span class="ic" aria-hidden="true">${x.ok?"✓":"✗"}</span><span>${x.l}</span><b>${x.v}</b><em>${x.ok?"Pass":"Fail"}</em></li>`).join("")}</ul>`,
+  why=[...r.fails.map(x=>x.fix),...r.tm.map(x=>x.t)];
+  if(r.pm.length)return tbl+`<div class="res no"><b>Please talk to a doctor before donating</b><ul>${li(r.pm.map(x=>x.t).concat(why))}</ul></div>`;
+  if(why.length)return tbl+`<div class="res no"><b>Not eligible right now</b><ul>${li(why)}</ul>${r.mx?`<div style="margin-top:8px">You can try again after <b>${fmtD(new Date(Date.now()+r.mx*864e5))}</b>.</div>`:""}</div>`;
+  return tbl+`<div class="res ok"><b>You look eligible to donate.</b><ul><li>Eat a light meal and drink water before you come.</li><li>Sleep well the night before and carry a photo ID.</li><li>Avoid heavy exercise for the rest of the day.</li></ul>${cta?`<button type="button" class="btn" style="margin-top:10px" data-t="camps">See upcoming camps</button>`:""}</div>`;
+}
+function bookDlg(id){
+  const c=allCamps().find(x=>x.id===id),best=hrs(c).reduce((b,h)=>c.cap-taken(c,h)>c.cap-taken(c,b)?h:b,hrs(c)[0]);
+  const qs=[...TMP,...PRM].map(x=>`<fieldset class="qf"><legend>${x[1]}</legend><label><input type="radio" name="q_${x[0]}" value="y" required> Yes</label><label><input type="radio" name="q_${x[0]}" value="n"> No</label></fieldset>`).join("");
+  $("#dlg").innerHTML=`<form class="f" id="bf" method="dialog"><h2>Book a slot</h2><div class="small">${esc(c.name)}, ${fmtD(c.d)} at ${esc(c.venue)}</div>
+  <h3>1. Your details</h3><div class="two"><label>Full name<input id="bn" required autocomplete="name"></label><label>Phone<input id="bp" required inputmode="tel" pattern="[0-9+ ]{10,14}" placeholder="10 digits"></label></div>
+  <fieldset class="qf"><legend>Blood group</legend><div class="chips">${G.map(g=>`<label class="chip bgc"><input type="radio" name="bg" value="${g}" required><span>${g}</span></label>`).join("")}</div></fieldset>
+  <label>Time slot<select id="bh">${hrs(c).map(h=>{const{r,tag}=slotInfo(c,h);return `<option value="${h}" ${r>0?"":"disabled"} ${h===best?"selected":""}>${fmtH(h)} (${r>0?r+" left":"full"}${tag?", "+tag[0].toLowerCase():""})</option>`}).join("")}</select><span class="small" style="font-weight:400">The quietest hour is picked for you. It keeps queues short.</span></label>
+  <h3>2. Quick eligibility</h3><div class="two"><label>Age<input type="number" id="ba" min="1" max="99" required></label><label>Weight (kg)<input type="number" id="bw" min="20" max="200" required></label></div>
+  <div class="two"><label>Haemoglobin (g/dL), if known<input type="number" id="bhb" step="0.1" min="5" max="20"></label><label>Days since last donation<input type="number" id="bd" min="0" placeholder="Empty if never"></label></div>
+  <h3>3. Health pre-screening</h3><p class="small" style="margin:0">Answer every question honestly. The camp doctor confirms on the day.</p>${qs}
+  <div class="row"><button type="button" class="btn alt" id="bx">Cancel</button><button class="btn">Check and confirm booking</button></div></form>`;
+  if(!$("#dlg").open)$("#dlg").showModal();
+  $("#bx").onclick=()=>$("#dlg").close();
+  $("#bf").onsubmit=e=>{e.preventDefault();
+    const h=+$("#bh").value,p=$("#bp").value.trim(),nm=$("#bn").value.trim(),g=document.querySelector("input[name=bg]:checked").value,hb=$("#bhb").value;
+    if(S.appts.some(a=>a.camp===id&&a.phone===p)){toast("This phone number already has a slot at this camp");return}
+    const yes=new Set([...TMP,...PRM].filter(x=>document.querySelector(`input[name=q_${x[0]}]:checked`).value==="y").map(x=>x[0]));
+    const r=screen({a:+$("#ba").value,w:+$("#bw").value,h:hb===""?"":+hb,ds:$("#bd").value,yes});
+    if(!r.ok){$("#dlg").innerHTML=`<h2>We cannot book you in yet</h2><p class="small">Nothing was booked, because your answers show you cannot donate right now.</p>${resHtml(r)}<div class="row"><button type="button" class="btn alt" id="bk">Change my answers</button><button type="button" class="btn" id="bx">Close</button></div>`;$("#bx").onclick=()=>$("#dlg").close();$("#bk").onclick=()=>bookDlg(id);return}
+    const ref="OMH-"+(1000+Math.floor(Math.random()*9000));
+    S.appts.push({id:Date.now(),camp:id,h,name:nm,group:g,phone:p,ref});save();render();
+    $("#dlg").innerHTML=`<h2>You are booked</h2><div class="res ok"><b>Reference ${ref}</b><br>${esc(nm)} (${g}), ${fmtH(h)} on ${fmtD(c.d)}<br>${esc(c.venue)}</div><p class="small">Bring a photo ID and quote this reference at the desk. Eat before you come and drink water.</p><div class="row"><a href="${gmap(c)}" target="_blank" rel="noopener" style="color:var(--red)">Open venue in Google Maps</a><button type="button" class="btn" id="bx">Done</button></div>`;
+    $("#bx").onclick=()=>$("#dlg").close()};
+}
+const TMP=[["fever","I have a fever, cold, flu or any infection right now",0,"Wait until you have fully recovered."],
+["antib","I took antibiotics in the last 7 days",7,"Wait 7 days after your last dose."],
+["alc","I drank alcohol in the last 24 hours",1,"Wait 24 hours after drinking alcohol."],
+["vacc","I had a vaccination in the last 4 weeks",28,"Wait 4 weeks after a vaccination."],
+["mal","I had malaria in the last 3 months",91,"Wait 3 months after malaria."],
+["tattoo","I got a tattoo, piercing or acupuncture in the last 6 months",183,"Wait 6 months after a tattoo, piercing or acupuncture."],
+["surg","I had major surgery in the last 6 months",183,"Wait 6 months after major surgery."],
+["preg","I am pregnant, or I gave birth or breastfed in the last 6 months",183,"Pregnant and recently delivered women should not donate."],
+["trans","I received a blood transfusion in the last 12 months",365,"Wait 12 months after a blood transfusion."],
+["risk","In the last 12 months I had unprotected sex with a new or multiple partners",365,"Wait 12 months after this kind of exposure."]];
+const PRM=[["chronic","I have or had HIV/AIDS, hepatitis B or C, heart disease, cancer, epilepsy, kidney disease or a bleeding disorder","These conditions usually mean permanent deferral."],
+["insulin","I take insulin for diabetes","Insulin-dependent diabetes usually means deferral."],
+["drug","I have used injected drugs not prescribed by a doctor","Injected drug use means deferral."]];
+function eligView(){
+  const cb=r=>r.map(x=>`<label class="check"><input type="checkbox" id="x_${x[0]}"> ${x[1]}</label>`).join("");
+  return `<div class="pghead"><h2>Am I eligible?</h2><p>Check the four basic rules first, then the health questions.</p></div><div class="panel"><form class="f" id="ef">
+  <h3>Basic rules</h3><div class="two"><label>Age (18 to 65)<input type="number" id="ea" min="1" max="99" required></label><label>Weight in kg (above 45)<input type="number" id="ew" min="20" max="200" required></label></div>
+  <div class="two"><label>Haemoglobin in g/dL (above 12.5)<input type="number" id="eh" step="0.1" min="5" max="20" required></label><label>Days since last donation (90 or more)<input type="number" id="ed" min="0" placeholder="Empty if never donated"></label></div>
+  <h3>Vitals (optional, the camp will measure these)</h3><div class="two"><label>Pulse (beats/min)<input type="number" id="ep" min="30" max="200"></label><label>Blood pressure (top/bottom)<span style="display:flex;gap:6px"><input type="number" id="es" min="60" max="250" placeholder="120" style="width:50%"><input type="number" id="ei" min="30" max="150" placeholder="80" style="width:50%"></span></label></div>
+  <h3>Tick everything that applies to you</h3>${cb(TMP)}
+  <h3>Medical history</h3>${cb(PRM)}
+  <button class="btn">Check eligibility</button></form><div id="er"></div>
+  <p class="small">This is a quick screening only. The camp doctor makes the final decision.</p></div>`;
+}
+function runElig(e){e.preventDefault();
+  const yes=new Set([...TMP,...PRM].filter(x=>$("#x_"+x[0]).checked).map(x=>x[0])),extra=[];
+  const p=+$("#ep").value,sy=+$("#es").value,di=+$("#ei").value;
+  if(p&&(p<50||p>100))extra.push("Pulse should be between 50 and 100 beats/min. The camp nurse will recheck.");
+  if(sy&&di&&(sy<100||sy>180||di<50||di>100))extra.push("Blood pressure should be about 100 to 180 over 50 to 100. The camp nurse will recheck.");
+  const r=screen({a:+$("#ea").value,w:+$("#ew").value,h:+$("#eh").value,ds:$("#ed").value,yes,extra});
+  $("#er").innerHTML=resHtml(r,true);$("#er").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function invView(){
+  const st=n=>n<10?["crit","Urgent need"]:n<20?["low","Running low"]:["good","Well stocked"];
+  const need=G.filter(g=>S.inv[g]<20),fg=S.fg,banks=S.banks.slice().sort((a,b)=>a.km-b.km);
+  return `<p>${need.length?`Groups that need donors now: <b>${need.join(", ")}</b>.`:"All blood groups are well stocked."}</p>
+  ${boardHead()}<h2 style="margin:6px 0 10px">${S.role==="org"?"Stock by blood group":"1. Tap the blood group you need"}</h2><div class="inv">${(S.allg?G:BG5).map(g=>{const n=S.inv[g],[k,l]=st(n);return `<div class="unit${S.fg===g?" sel":""}"><h3>${g}</h3><div class="n">${n} units</div><div class="meter"><i style="width:${Math.min(100,n)}%;background:${k==="good"?"var(--ok)":k==="low"?"var(--warn)":"var(--bad)"}"></i></div><div class="row"><span class="st ${k}">${l}</span>${S.role==="org"?`<button class="btn alt" data-plan="${g}" ${n<20?"":"disabled"}>${n<20?"Plan a camp":"Well stocked"}</button>`:`<button class="btn alt" data-pick="${g}" ${n?"":"disabled"}>${n?"Order":"None left"}</button>`}</div></div>`}).join("")}</div>${matrix()}
+  <h2 id="banks" style="margin:26px 0 6px;scroll-margin-top:16px">${S.role==="org"?"Update units at each blood bank":"2. Choose a blood bank and reserve"}</h2><p class="small">${S.role==="org"?"Choose a blood group, then use + and − to record units received or issued.":"Pick a blood bank below and press Reserve blood. You will get a collection code to show at the bank."}</p>
+  <div class="bar"><select id="fg" aria-label="Blood group needed"><option value="">Choose a blood group</option>${G.map(g=>`<option ${fg===g?"selected":""}>${g}</option>`).join("")}</select></div>
+  ${fg?`<div class="grid">${banks.map(b=>{const n=b.inv[fg],[k,l]=st(n);return `<article class="panel"><h3>${b.name}</h3><div class="meta">${b.area}, ${b.km} km away<br>Open ${b.hrs}</div><div><b>${n} units of ${fg}</b> <span class="st ${k}">${l}</span></div><div class="row">${S.role==="org"?`<span class="adj"><button data-adj="${b.id}|${fg}|-1" aria-label="Remove one unit">−</button><button data-adj="${b.id}|${fg}|1" aria-label="Add one unit">+</button></span>`:"<span></span>"}${S.role==="org"?"":`<button class="btn" data-res="${b.id}" ${n?"":"disabled"}>Reserve blood</button>`}</div></article>`}).join("")}</div>
+  ${S.inv[fg]?"":`<div class="strip">No blood bank has ${fg} right now. ${S.role!=="org"?`<button class="btn" data-alertg="${fg}">Alert donors</button>`:""}</div>`}`:`<div class="empty">Pick a blood group above to see where it is available.</div>`}`;
+}
+const boardHead=()=>`<div class="bhead"><h2>Blood bank status board</h2><span class="live"><i></i>Live, updated <b id="upd">${ago()}</b></span></div><label class="check small" style="margin:0 0 12px"><input type="checkbox" id="allg" ${S.allg?"checked":""}> Also show A−, B− and AB−</label>`;
+const matrix=()=>{const gs=S.allg?G:BG5,cl=n=>n<=2?["crit","Urgent"]:n<=6?["low","Low"]:["good","OK"],used=b=>G.reduce((t,g)=>t+b.inv[g],0);
+  const rows=S.banks.map(b=>{const u=used(b),cap=CAPS[b.id]||100,p=Math.min(100,Math.round(u/cap*100));return `<tr><th scope="row">${b.name}<div class="small">${b.km} km, ${b.hrs}</div></th>${gs.map(g=>{const[k,l]=cl(b.inv[g]);return `<td class="${k}"><b>${b.inv[g]}</b><small>${l}</small></td>`}).join("")}<td><b>${p}%</b><small>${u} of ${cap} bags</small><div class="meter"><i style="width:${p}%;background:${p>=85?"var(--bad)":p>=65?"var(--warn)":"var(--ok)"}"></i></div>${p>=85?'<small class="st crit">Nearly full</small>':""}</td></tr>`}).join("");
+  return `<h2 style="margin:26px 0 6px">Stock at each blood bank</h2><p class="small">Units in hand at every bank and how full its storage is. When storage is nearly full, send donors to other banks and camps.</p><div class="tw"><table class="mx"><thead><tr><th>Blood bank</th>${gs.map(g=>`<th>${g}</th>`).join("")}<th>Storage</th></tr></thead><tbody>${rows}</tbody></table></div>`};
+function resDlg(bid){
+  const b=S.banks.find(x=>x.id===bid),g=S.fg,mx=Math.min(4,b.inv[g]);
+  $("#dlg").innerHTML=`<form class="f" id="rf" method="dialog"><h2>Reserve ${g} blood</h2><div class="small">${b.name}, ${b.area}</div>
+  <div class="two"><label>Units needed<select id="ru">${Array.from({length:mx},(_,i)=>`<option>${i+1}</option>`).join("")}</select></label><label>Phone<input id="rp" required inputmode="tel" pattern="[0-9+ ]{10,14}"></label></div>
+  <label>Patient name<input id="rn" required></label><label>Hospital and ward<input id="rh" required></label>
+  <div class="row"><button type="button" class="btn alt" id="bx">Cancel</button><button class="btn">Confirm reservation</button></div></form>`;
+  $("#dlg").showModal();$("#bx").onclick=()=>$("#dlg").close();
+  $("#rf").onsubmit=e=>{e.preventDefault();const n=+$("#ru").value,code="BR-"+(1000+Math.floor(Math.random()*9000));
+    b.inv[g]-=n;S.reqs.push({id:Date.now(),bank:bid,g,n,code,name:$("#rn").value.trim(),phone:$("#rp").value.trim(),hosp:$("#rh").value.trim(),by:Date.now()+864e5});
+    syncInv();save();$("#dlg").close();toast("Reserved. Your code is "+code);S.tab="reqs";render()};
+}
+function reqsView(){
+  if(!S.reqs.length)return `<div class="empty">You have not reserved any blood yet. Open <a href="#" data-t="inv" style="color:var(--red)">Blood stock</a> to find a blood bank.</div>`;
+  return `<div class="grid">${S.reqs.map(r=>{const b=S.banks.find(x=>x.id===r.bank);return `<article class="panel"><h3>${r.n} unit${r.n>1?"s":""} of ${r.g}</h3><div class="meta">${b.name}, ${b.area} (${b.km} km)<br>For ${esc(r.name)} at ${esc(r.hosp)}</div><div>Collection code: <b>${r.code}</b></div><div class="small" style="margin-top:4px">Show this code and the doctor's request before ${new Date(r.by).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"})}. After that, the units go back to stock.</div><div class="row"><span></span><button class="btn alt" data-rc="${r.id}">Cancel reservation</button></div></article>`}).join("")}</div>`;
+}
+const COMPAT={"O-":["O-"],"O+":["O+","O-"],"A-":["A-","O-"],"A+":["A+","A-","O+","O-"],"B-":["B-","O-"],"B+":["B+","B-","O+","O-"],"AB-":["AB-","A-","B-","O-"],"AB+":G};
+const DONORS=[["Anil K.","O+",1.2,140,"Camp donor"],["Simran B.","A+",2.4,200,"Camp donor"],["Rohit S.","B+",3.1,95,"Hospital donor"],["Meera P.","O-",3.8,310,"Camp donor"],["Jaspreet S.","A-",4.5,120,"Volunteer"],["Kavya R.","AB+",5.0,400,"Camp donor"],["Harpal D.","B-",5.6,180,"Hospital donor"],["Nisha T.","O+",6.2,60,"Camp donor"],["Arjun M.","A+",6.9,150,"Volunteer"],["Pooja V.","AB-",7.4,220,"Camp donor"],["Gurmeet L.","B+",8.1,130,"Hospital donor"],["Tanya G.","O-",9.0,500,"Volunteer"],["Vikram J.","A-",9.7,100,"Camp donor"],["Deepa N.","O+",10.3,260,"Camp donor"],["Mohit R.","B+",12.4,45,"Camp donor"],["Ravi P.","B-",14.2,240,"Camp donor"],["Anjali M.","O-",18.5,130,"Hospital donor"],["Sameer H.","AB-",22.0,170,"Volunteer"],["Kiran B.","B-",27.3,320,"Camp donor"],["Neha S.","O-",33.4,110,"Camp donor"],["Balvir T.","A-",41.0,210,"Volunteer"]];
+const WHEN={now:"right now",today:"today",soon:"within 2 to 3 days"};
+function alertView(){
+  return `<div class="pghead"><h2>Find donors urgently</h2><p>Use this when blood banks cannot supply enough blood. We alert eligible donors near the hospital, and they reply with Accept or Unavailable.</p></div>
+  <div class="panel"><form class="f" id="af"><div class="two"><label>Blood group needed<select id="ag">${G.map(g=>`<option ${S.ag===g?"selected":""}>${g}</option>`).join("")}</select></label>
+  <label>Units needed<select id="an">${[1,2,3,4,5,6].map(i=>`<option>${i}</option>`).join("")}</select></label></div>
+  <label>When is blood needed?<select id="au"><option value="now">Right now (within 2 hours)</option><option value="today">Today (within 24 hours)</option><option value="soon">In the next 2 to 3 days</option></select></label>
+  <div class="two"><label>Hospital and ward (where donors should go)<input id="ah" required placeholder="e.g. Civil Hospital, Ward 3"></label><label>Contact number<input id="ap" required inputmode="tel" pattern="[0-9+ ]{10,14}"></label></div>
+  <label>Search within<select id="ar"><option value="5">5 km</option><option value="10" selected>10 km</option><option value="25">25 km</option><option value="50">50 km</option></select></label>
+  <button class="btn">Send alert</button></form>
+  <p class="small">Donors come from people who gave blood at camps or hospitals, volunteers, and anyone who booked a slot on this site. Only donors who gave blood 90 or more days ago are contacted. This is a simulation, so no real messages are sent.</p></div><div id="aout"></div>`;
+}
+let timers=[];
+function runAlert(e){e.preventDefault();timers.forEach(clearTimeout);timers=[];
+  const g=$("#ag").value,n=+$("#an").value,w=$("#au").value,r=+$("#ar").value,h=$("#ah").value.trim(),ph=$("#ap").value.trim();
+  const cap={now:10,today:6,soon:4}[w],gap={now:250,today:400,soon:600}[w],nx=[5,10,25,50].find(x=>x>r);
+  const pool=[...DONORS,...S.appts.map(a=>[a.name,a.group,1+(a.id%120)/10,200,"Booked at our camp"])].filter(d=>COMPAT[g].includes(d[1])&&d[2]<=r);
+  const ok=pool.filter(d=>d[3]>=90).sort((a,b)=>a[2]-b[2]),skip=pool.length-ok.length,m=ok.slice(0,cap),extra=ok.length-m.length;
+  const out=$("#aout");const wide=()=>{const b=out.querySelector("[data-wide]");if(b)b.onclick=()=>{$("#ar").value=nx;$("#af").requestSubmit()}};
+  if(!m.length){out.innerHTML=`<div class="res no" style="margin-top:16px"><b>No eligible donors for ${g} within ${r} km.</b>${nx?` <button type="button" class="btn" data-wide style="margin-top:8px">Search within ${nx} km</button>`:" Please contact the nearest blood bank."}</div>`;wide();return}
+  out.innerHTML=`<div class="panel" style="margin-top:16px"><b>Message sent to donors</b><p class="small" style="margin:6px 0 0">“Urgent: ${g} blood needed ${WHEN[w]} at ${esc(h)}. Please call ${esc(ph)} if you can help.”</p></div>
+  <div class="panel" style="margin-top:12px"><b id="sm">0 of ${n} donors confirmed</b><div class="meter" style="margin:8px 0"><i id="smb" style="width:0%"></i></div>
+  <div class="small">${COMPAT[g].join(", ")} donors can give to ${g}.${skip?` ${skip} donor${skip>1?"s were":" was"} skipped because they gave blood less than 90 days ago.`:""}${extra?` ${extra} more donor${extra>1?"s are":" is"} on standby.`:""}</div></div>
+  <ul class="alerts" id="al">${m.map((d,i)=>`<li id="d${i}"><span>${esc(d[0])} (${d[1]}, ${d[2].toFixed(1)} km)<br><span class="small">${d[4]}</span></span><span class="snd">Waiting to send</span></li>`).join("")}</ul><div id="fin" style="margin-top:12px"></div>`;
+  out.scrollIntoView({behavior:"smooth",block:"start"});
+  let k=0;
+  m.forEach((d,i)=>{
+    timers.push(setTimeout(()=>{const t=$("#d"+i+" > span:last-child");if(t)t.textContent="Alert sent"},gap*i+300));
+    timers.push(setTimeout(()=>{const t=$("#d"+i+" > span:last-child");if(!t)return;const yes=(d[0].length+i+n)%3!==0;t.className=yes?"acc":"dec";
+      t.textContent=yes?`Accepted: about ${Math.round(d[2]*3+8)} min away`:"Unavailable";if(yes)k++;
+      $("#sm").textContent=`${Math.min(k,n)} of ${n} donors confirmed`;$("#smb").style.width=Math.min(100,k/n*100)+"%"},gap*i+1800));
+  });
+  timers.push(setTimeout(()=>{$("#fin").innerHTML=k>=n?`<div class="res ok"><b>Enough donors have confirmed.</b> Keep your phone on and tell the hospital counter that donors are on the way.</div>`:`<div class="res no"><b>${k} of ${n} confirmed so far.</b>${nx?` <button type="button" class="btn" data-wide style="margin-top:8px">Search within ${nx} km</button>`:" Please also contact the nearest blood bank."}</div>`;wide()},gap*(m.length-1)+2100));
+}
+function mineView(){
+  if(!S.appts.length)return `<div class="empty">You have no appointments yet. Book a slot from <a href="#" data-t="camps" style="color:var(--red)">Upcoming camps</a>.</div>`;
+  const all=[...seed,...custom].map(c=>({...c,d:pd(c.date)}));
+  return `<div class="grid">${S.appts.map(a=>{const c=all.find(x=>x.id===a.camp);if(!c)return "";return `<article class="panel"><h3>${esc(c.name)}</h3><div class="meta">${fmtD(c.d)} at ${fmtH(a.h)}<br>${esc(c.venue)}</div><div>${esc(a.name)}, ${a.group}${a.ref?`, ref <b>${a.ref}</b>`:""}</div><div class="row"><span class="small">Bring a photo ID, eat before you come and drink water.</span><button class="btn alt" data-cancel="${a.id}">Cancel slot</button></div></article>`}).join("")}</div>`;
+}
+function orgView(){
+  const t=iso(day(1)),pre=S.focus&&S.focus.length?S.focus:crit();
+  return `<div class="pghead"><h2>Create a camp</h2><p>Add a new camp. A slot limit for each hour keeps queues short and spreads donors across the day.</p></div>
+  <div class="panel"><form class="f" id="of"><label>Camp name<input id="on" required></label>
+  <div class="two"><label>Date<input type="date" id="od" min="${iso(day(0))}" value="${t}" required></label><label>Donors per hour (slot limit)<input type="number" id="oc" min="1" max="50" value="8" required></label></div>
+  <div class="two"><label>Start hour (0 to 23)<input type="number" id="os" min="0" max="22" value="9" required></label><label>End hour (1 to 23)<input type="number" id="oe" min="1" max="23" value="14" required></label></div>
+  <div class="two"><label>Venue<input id="ov" required></label><label>Organiser<input id="oo" required></label></div>
+  <fieldset style="border:0;padding:0;margin:0"><legend style="font-weight:600;margin-bottom:6px">Blood groups needed most</legend><div class="chips">${G.map(g=>`<label class="chip" style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" class="fg" value="${g}" ${pre.includes(g)?"checked":""}> ${g}</label>`).join("")}</div><div class="small" style="margin-top:6px">Groups that are running low are ticked for you.</div></fieldset>
+  <label>Short description (optional)<input id="odsc"></label><button class="btn">Add camp</button></form></div>`;
+}
+function myCampsView(){
+  const cs=allCamps(),done=S.appts.filter(a=>a.done).length,tb=cs.reduce((t,c)=>t+total(c)-left(c),0),to=cs.reduce((t,c)=>t+left(c),0);
+  const stat=(n,l)=>`<div class="unit"><div class="n">${n}</div><div class="small">${l}</div></div>`;
+  return `<div class="pghead"><h2>My camps</h2><p>Track how full each camp is, see who has booked each hour, and mark donors as they donate.</p></div>
+  <div class="inv" style="margin-bottom:22px">${stat(cs.length,"upcoming camps")}${stat(tb,"slots booked")}${stat(to,"slots still open")}${stat(done,"donations marked")}</div>
+  <div class="grid">${cs.map(c=>{const l=left(c),t=total(c),p=Math.round((t-l)/t*100),u=urg(c),mine=S.appts.filter(x=>x.camp===c.id);
+  const slots=hrs(c).map(h=>{const tk=taken(c,h),ap=mine.filter(x=>x.h===h),oth=tk-ap.length;
+    return `<div class="sl"><b>${fmtH(h)}</b><span class="small">${tk} of ${c.cap} booked</span></div>${ap.length?`<ul class="bk">${ap.map(x=>`<li>${esc(x.name)} (${x.group}), ${esc(x.phone)} ${x.done?'<b class="st good">Donated</b>':`<button class="btn alt" data-done="${x.id}">Mark donated</button>`}</li>`).join("")}</ul>`:""}${oth>0?`<div class="small" style="padding:4px 0">+ ${oth} other booking${oth>1?"s":""} (phone or walk-in)</div>`:""}`}).join("");
+  return `<article class="cc"><div class="cc-top"><span class="dchip">${c.d.getDate()} ${c.d.toLocaleDateString("en-IN",{month:"short"})}</span><span class="cc-when">${c.d.toLocaleDateString("en-IN",{weekday:"long"})}, ${fmtH(c.s)} to ${fmtH(c.e)}</span><span class="tag q">${l?"Open":"Full"}</span></div>
+  <h3>${esc(c.name)}</h3><p class="cc-meta">${esc(c.venue)}<br>Organiser: ${esc(c.org)}<br>Limit: ${c.cap} donors per hour</p>
+  ${(c.focus||[]).length?`<div class="small">Blood groups needed: <b>${c.focus.join(", ")}</b>${u.length?` (urgent: ${u.join(", ")})`:""}</div>`:""}
+  <div class="meter ${l?"":"full"}"><i style="width:${p}%"></i></div><div class="small">${t-l} of ${t} slots booked, ${l} open</div>
+  <details ${mine.length?"open":""}><summary style="cursor:pointer;font-weight:600;margin-top:6px">Hourly slots and donors</summary>${slots}</details>
+  ${c.id[0]==="u"?`<div class="cc-foot"><span></span><button class="btn alt" data-del="${c.id}">Delete camp</button></div>`:""}</article>`}).join("")}</div>`;
+}
+function addCamp(e){e.preventDefault();
+  const s0=+$("#os").value,e0=+$("#oe").value;
+  if(e0<=s0){toast("End hour must be after start hour");return}
+  custom.push({id:"u"+Date.now(),name:$("#on").value.trim(),date:$("#od").value,s:s0,e:e0,venue:$("#ov").value.trim(),org:$("#oo").value.trim(),cap:+$("#oc").value,focus:[...document.querySelectorAll(".fg:checked")].map(x=>x.value),desc:$("#odsc").value.trim()||"Community camp."});
+  try{localStorage.setItem("bdoc",JSON.stringify(custom))}catch(x){}
+  toast("Camp added");S.focus=[];S.tab="mycamps";render()}
+function render(){
+  renderTabs();
+  const V={mycamps:myCampsView,reqs:reqsView,home:homeView,org:orgView,camps:campsView,elig:eligView,inv:invView,alert:alertView,mine:mineView};
+  $("#view").innerHTML=V[S.tab]();
+  if(S.tab==="elig")$("#ef").onsubmit=runElig;
+  if(S.tab==="alert")$("#af").onsubmit=runAlert;if(S.tab==="org")$("#of").onsubmit=addCamp;const so=$("#so");if(so)so.onchange=e=>{S.sort=e.target.value;render()};const fgs=$("#fg");if(fgs)fgs.onchange=e=>{S.fg=e.target.value;render()};const sg=$("#sg");if(sg)sg.onchange=e=>{S.g=e.target.value;render()};const mo=$("#mo");if(mo)mo.onchange=e=>{S.m=e.target.value;render()};const cl=$("#clr");if(cl)cl.onclick=()=>{S.q="";S.f="all";S.g="";S.m="";render()};
+  const al2=$("#allg");if(al2)al2.onchange=e=>{S.allg=e.target.checked;render()};const q=$("#q");if(q)q.oninput=e=>{S.q=e.target.value.toLowerCase();const p=e.target.selectionStart;render();const n=$("#q");n.focus();n.setSelectionRange(p,p)};
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-t]");if(t&&!t.closest("#tabs")){e.preventDefault();if(t.dataset.close)$("#dlg").close();S.tab=t.dataset.t;render();return}
+  const f=e.target.closest("[data-f]");if(f){S.f=f.dataset.f;render();return}
+  const ug=e.target.closest("[data-urg]");if(ug){S.role="donor";S.g=ug.dataset.urg;S.f="all";S.m="";S.q="";S.tab="camps";render();window.scrollTo(0,0);return}const pl=e.target.closest("[data-plan]");if(pl){S.focus=[pl.dataset.plan];S.tab="org";render();window.scrollTo(0,0);return}
+  const dn=e.target.closest("[data-done]");if(dn){const a=S.appts.find(z=>z.id==dn.dataset.done);a.done=true;S.banks[0].inv[a.group]++;syncInv();save();toast("Marked donated. 1 unit of "+a.group+" added to stock");render();return}
+  const dl=e.target.closest("[data-del]");if(dl){const id=dl.dataset.del;custom=custom.filter(z=>z.id!==id);S.appts=S.appts.filter(z=>z.camp!==id);try{localStorage.setItem("bdoc",JSON.stringify(custom))}catch(x){}save();toast("Camp deleted");render();return}
+  const pk=e.target.closest("[data-pick]");if(pk){S.fg=pk.dataset.pick;render();setTimeout(()=>{const el=$("#banks");if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},50);return}
+  const rs=e.target.closest("[data-res]");if(rs){resDlg(rs.dataset.res);return}
+  const rc=e.target.closest("[data-rc]");if(rc){const r=S.reqs.find(z=>z.id==rc.dataset.rc);S.banks.find(z=>z.id===r.bank).inv[r.g]+=r.n;S.reqs=S.reqs.filter(z=>z!==r);syncInv();save();toast("Reservation cancelled");render();return}
+  const al=e.target.closest("[data-alertg]");if(al){S.ag=al.dataset.alertg;S.tab="alert";render();return}
+  const ro=e.target.closest("[data-role]");if(ro){S.role=ro.dataset.role;S.tab={donor:"camps",need:"inv",org:"mycamps"}[S.role];render();window.scrollTo(0,0);return}const dt=e.target.closest("[data-det]");if(dt){detDlg(dt.dataset.det);return}const b=e.target.closest("[data-book]");if(b){bookDlg(b.dataset.book);return}
+  const x=e.target.closest("[data-adj]");if(x){const[bi,g,d]=x.dataset.adj.split("|"),bk=S.banks.find(z=>z.id===bi);bk.inv[g]=Math.max(0,bk.inv[g]+ +d);syncInv();save();render();return}
+  const c=e.target.closest("[data-cancel]");if(c){S.appts=S.appts.filter(a=>a.id!=c.dataset.cancel);save();toast("Slot cancelled");render()}
+});
+render();
+
+/* ===== Beat: site assistant (runs in the browser, reads live site data) ===== */
+(function(){
+const TR={home:"",camps:"donor",elig:"donor",mine:"donor",inv:"need",alert:"need",reqs:"need",org:"org",mycamps:"org"};
+const root=document.createElement("div");
+root.innerHTML=`<button class="cb-fab" id="cbf" aria-expanded="false" aria-controls="cbp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg><span>Ask Beat</span></button>
+<div class="cb-p" id="cbp" role="dialog" aria-label="Beat, the site assistant" hidden>
+<div class="cb-h"><div><b>Beat</b><span>Your blood donation helper</span></div><button type="button" id="cbx" aria-label="Close chat">×</button></div>
+<div class="cb-m" id="cbm" aria-live="polite"></div>
+<div class="cb-q" id="cbq"></div>
+<form class="cb-f" id="cbfm"><input id="cbi" autocomplete="off" maxlength="300" placeholder="Ask about camps, eligibility, stock…" aria-label="Type your question"><button class="btn">Send</button></form>
+<div class="cb-note">Beat gives general guidance. The camp doctor and your own doctor decide.</div></div>`;
+document.body.appendChild(root);
+const fab=$("#cbf"),panel=$("#cbp"),msgs=$("#cbm"),inp=$("#cbi");
+let greeted=false,lastG="",myG="";
+const mine=()=>myG||(S.appts.length?S.appts[S.appts.length-1].group:"");
+function openP(){panel.hidden=false;fab.hidden=true;fab.setAttribute("aria-expanded","true");if(!greeted){greeted=true;hello()}inp.focus()}
+function closeP(){panel.hidden=true;fab.hidden=false;fab.setAttribute("aria-expanded","false");fab.focus()}
+fab.onclick=openP;$("#cbx").onclick=closeP;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!panel.hidden&&!$("#dlg").open)closeP()});
+function go(t){S.role=TR[t];S.tab=t;render();window.scrollTo(0,0);if(innerWidth<640)closeP()}
+function addMsg(html,who,acts){
+  const d=document.createElement("div");d.className="cb-b "+who;d.innerHTML=html;
+  if(acts&&acts.length){const a=document.createElement("div");a.className="cb-a";
+    acts.forEach(([l,fn])=>{const b=document.createElement("button");b.type="button";b.textContent=l;b.onclick=fn;a.appendChild(b)});d.appendChild(a)}
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d}
+const QUICK=[["Am I eligible?","Can I donate blood?"],["Next camp","Which camp is next?"],["Blood stock","What is the blood stock?"],["I need blood urgently","I need blood urgently"],["How it works","How does donating work?"],["Who can I give to?","Who can I give blood to?"],["Is my group needed?","Is my blood group needed?"]];
+$("#cbq").innerHTML=QUICK.map((q,i)=>`<button type="button" data-q="${i}">${q[0]}</button>`).join("");
+$("#cbq").onclick=e=>{const b=e.target.closest("[data-q]");if(b)ask(QUICK[b.dataset.q][1])};
+function hello(){addMsg(`<p>Hi, I'm <b>Beat</b>. I can help you:</p><ul><li>check if you can donate</li><li>find a camp and book a slot</li><li>see blood stock and reserve blood</li><li>find donors in an emergency</li></ul><p>Tap a suggestion below or type your question.</p>`,"bot");
+  const b=mine();if(b){myG=b;lastG=b;addMsg(`<p>I see you booked as <b>${b}</b>, so I'll use that as your blood group.</p>`,"bot",[["Change it",()=>{addMsg("Change my group","me");const r=askG();addMsg(r.h,"bot",r.a)}]])}
+  else{const r=askG("To give you personal answers, what's your blood group? You can skip this.");addMsg(r.h,"bot",r.a)}}
+$("#cbfm").onsubmit=e=>{e.preventDefault();const v=inp.value.trim();if(v){inp.value="";ask(v)}};
+function ask(text){
+  addMsg(esc(text),"me");
+  const t=addMsg('<span class="cb-typing" aria-label="Beat is typing"><i></i><i></i><i></i></span>',"bot");
+  setTimeout(()=>{let r;try{r=reply(text)}catch(x){r={h:"<p>Sorry, something went wrong on my side. Please try again or use the tabs above.</p>"}}
+    t.remove();addMsg(r.h,"bot",r.a)},420);
+}
+const grp=t=>{const m=t.match(/(?:^|[^a-z])(ab|a|b|o)\s?(\+|-|−|–|positive|negative|pos|neg)(?![a-z])/i);if(!m)return"";return m[1].toUpperCase()+(/^(\+|pos)/i.test(m[2])?"+":"-")};
+const stat=n=>n<10?"urgent need":n<20?"running low":"well stocked";
+function setG(g){myG=g;lastG=g;const n=S.inv[g],to=G.filter(y=>COMPAT[y].includes(g));
+  return{h:`<p>Got it, you're <b>${g}</b>.</p><ul><li>You can give to: ${to.join(", ")}</li><li>You can receive from: ${COMPAT[g].join(", ")}</li><li>${g} stock now: ${n} units (${stat(n)})</li></ul>${n<20?"<p>Your group is needed right now, so a donation from you would really help.</p>":"<p>Stock of your group is healthy, but camps always welcome regular donors.</p>"}<p class=\"small\">I only remember this while this page is open.</p>`,
+   a:[n<20?["Camps needing "+g,()=>{S.g=g;S.f="all";S.m="";S.q="";go("camps")}]:["Upcoming camps",()=>go("camps")],["Check eligibility",()=>go("elig")],["Change group",()=>{addMsg("Change my group","me");const r=askG();addMsg(r.h,"bot",r.a)}]]}}
+const groupActs=()=>[...G.map(x=>[x,()=>{addMsg(esc(x),"me");const r=setG(x);addMsg(r.h,"bot",r.a)}]),["Skip / I don't know",()=>{addMsg("Skip","me");addMsg("<p>No problem. I can still answer for any group, just include it in your question, like “Who can B− give to?”. A past donation slip or lab report shows your group.</p>","bot")}]];
+const askG=m=>({h:`<p>${m||"What's your blood group?"}</p>`,a:groupActs()});
+const campLine=c=>`<b>${esc(c.name)}</b>${urg(c).length?` <span class="tag">Needs ${urg(c).join(", ")}</span>`:""}<br>${fmtD(c.d)}, ${fmtH(c.s)} to ${fmtH(c.e)}<br>${esc(c.venue)}<br><span class="small">${left(c)} of ${total(c)} slots open</span>`;
+const campActs=cs=>cs.flatMap(c=>left(c)?[["Book: "+c.name.split(" ").slice(0,2).join(" "),()=>bookDlg(c.id)]]:[]);
+const DEF=[
+ [/fever|cold\b|flu\b|cough|sick|infection|unwell/,0],[/antibiotic/,1],[/alcohol|drink|drank|beer|wine|liquor/,2],[/vaccin|covid|jab\b|booster|shot\b/,3],
+ [/malaria/,4],[/tattoo|piercing|acupuncture/,5],[/surgery|operation|operated/,6],[/pregnan|breastfe|delivery|gave birth|new mother/,7],
+ [/transfusion|received blood/,8],[/unprotected|std\b|new partner|multiple partners/,9]];
+const PERM=[[/hiv|aids|hepatitis|heart|cancer|epilep|kidney|bleeding disorder|haemophilia|hemophilia/,0],[/insulin/,1],[/inject(ed|ing)? drug|drug use|drugs/,2]];
+const days=d=>d>=365?"12 months":d>=183?"6 months":d>=91?"3 months":d>=28?"4 weeks":d+" days";
+function eligFromText(t){
+  const age=(t.match(/(?:i am|i'm|im|age[d]?)\s*(\d{1,2})\b(?!\s*(?:kg|day|week|month))/)||t.match(/\b(\d{1,2})\s*(?:years?|yrs?|y\/o)/)||[])[1],
+  wt=(t.match(/(\d{2,3}(?:\.\d)?)\s*kgs?\b/)||[])[1],
+  hb=(t.match(/(?:hb|h\.b|haemoglobin|hemoglobin)\D{0,14}(\d{1,2}(?:\.\d)?)/)||t.match(/(\d{1,2}(?:\.\d)?)\s*(?:g\/dl|gm\/dl|gms?)/)||[])[1],
+  gm=t.match(/(\d+)\s*(day|week|month)s?\s*ago/),gap=gm&&/donat|gave|last time/.test(t)?(+gm[1])*({day:1,week:7,month:30}[gm[2]]):null;
+  if(age==null&&wt==null&&hb==null&&gap==null)return null;
+  const ok=[],no=[];
+  if(age!=null)(+age>=18&&+age<=65?ok:no).push(+age<18?"You must be at least 18 to donate (you said "+age+").":+age>65?"The upper age limit is 65 (you said "+age+").":"Age "+age+" is fine (18 to 65).");
+  if(wt!=null)(+wt>45?ok:no).push(+wt>45?wt+" kg is fine (above 45 kg).":"Weight must be above 45 kg (you said "+wt+").");
+  if(hb!=null)(+hb>12.5?ok:no).push(+hb>12.5?"Haemoglobin "+hb+" g/dL is fine (above 12.5).":"Haemoglobin must be above 12.5 g/dL (you said "+hb+"). Iron-rich food can help.");
+  if(gap!=null)(gap>=90?ok:no).push(gap>=90?"Your last donation was long enough ago (90 days or more).":"You need a 90-day gap. About "+(90-gap)+" more days.");
+  const miss=[age==null&&"age",wt==null&&"weight",hb==null&&"haemoglobin (the camp measures it if you don't know)",gap==null&&"days since your last donation (skip if never)"].filter(Boolean);
+  return{h:`<p><b>${no.length?"Not eligible right now":"So far so good"}</b></p><ul>${[...no,...ok].map(x=>`<li>${esc(x)}</li>`).join("")}</ul>${miss.length&&!no.length?`<p class="small">Still to check: ${miss.join(", ")}. The full checker also covers health questions.</p>`:""}`,a:[["Open full eligibility check",()=>go("elig")]]};
+}
+function reply(raw){
+  const t=raw.toLowerCase().replace(/[’]/g,"'"),has=r=>r.test(t),camps=allCamps();let g=grp(t);
+  if(g&&has(/\b(i am|i'm|im|my (blood )?(group|type) is|mine is|i have|i'm a)\b/)&&!has(/need|looking|require|find|search|for my|patient|stock|units|donat|give to|camp/)&&t.length<40)return setG(g);
+  if(!g&&has(/\bmy (blood )?(group|type)\b/)&&!has(/my (blood )?(group|type) is/)){if(mine())g=mine();else return askG("I don't know your blood group yet. Which is it?")}
+  if(g)lastG=g;
+  // emergencies first
+  if(has(/emergency|urgent|urgently|asap|immediately|right now|critical|accident|icu|dying/)&&has(/need|require|looking|want|find|search|blood|donor/)&&!has(/camp|book|schedule/))
+    return{h:`<p><b>If this is a medical emergency, call 112 or go to the nearest hospital now.</b></p><p>To get blood quickly on this site:</p><ul><li>See which blood banks have the group${g?" ("+g+")":""} and reserve units.</li><li>If banks are short, send an alert to eligible donors nearby.</li></ul>`,
+    a:[[g?"Check "+g+" stock":"Check blood stock",()=>{if(g)S.fg=g;go("inv")}],["Alert donors",()=>{if(g)S.ag=g;go("alert")}]]};
+  if(has(/^(hi|hello|hey|namaste|hii+|good (morning|afternoon|evening))\b/)&&t.length<30)return{h:"<p>Hello! What would you like help with: donating, finding blood, or organising a camp?</p>"};
+  if(has(/\b(thanks|thank you|thx|shukriya|dhanyavad)\b/))return{h:"<p>You're welcome. Thank you for caring enough to help. Anything else?</p>"};
+  if(has(/\b(bye|goodbye)\b/))return{h:"<p>Take care. Every donation counts.</p>"};
+  if(has(/what can you do|help me|who are you|what are you|your name/)&&!has(/blood group|eligible/))
+    return{h:`<p>I'm Beat, the assistant for this site. I can answer donation questions, check basic eligibility, show camps and open slots, report blood stock and open the right page for you.</p>`,a:[["Upcoming camps",()=>go("camps")],["Blood stock",()=>go("inv")]]};
+  // compatibility
+  if(has(/compatib|who can (donate|give|receive|take|i)|can .* (donate|give) to|can .* receive|receive from|donate to|give to|universal|i can (donate|give)/)){
+    if(has(/universal/)&&!g)return{h:"<p><b>O−</b> is the universal red cell donor: it can be given to every blood group. <b>AB+</b> is the universal receiver: AB+ patients can receive from every group.</p>"};
+    const x=g||mine()||lastG;
+    if(!x)return askG("Which blood group? I'll tell you who it can give to and receive from.");
+    const gGive=has(/(?:^|[^a-z])(ab|a|b|o)\s?(\+|-|−|–|positive|negative|pos|neg)(?![a-z])\s*(can\s*)?(donate|give|donors?)/)||has(/who can (i|we) (give|donate)|i can (give|donate)|can i (give|donate)/);
+    const recv=!gGive&&has(/receive|get from|take from|(give|donate) to/),acts=[["Check "+x+" stock",()=>{S.fg=x;go("inv")}]];
+    return recv?{h:`<p><b>${x}</b> patients can receive red cells from: <b>${COMPAT[x].join(", ")}</b>.</p><p class="small">Always confirm with the hospital's cross-match.</p>`,a:acts}
+      :{h:`<p><b>${x}</b> donors can give to: <b>${G.filter(y=>COMPAT[y].includes(x)).join(", ")}</b>.</p><p class="small">Always confirm with the hospital's cross-match.</p>`,a:acts};
+  }
+  // eligibility numbers in the message
+  const ef=eligFromText(t);if(ef&&!has(/stock|units|camp/))return ef;
+  // specific deferral questions
+  const hit=[];DEF.forEach(([r,i])=>{if(has(r))hit.push(TMP[i])});const ph=[];PERM.forEach(([r,i])=>{if(has(r))ph.push(PRM[i])});
+  if(ph.length)return{h:`<p><b>Please talk to a doctor before donating.</b></p><ul>${ph.map(x=>`<li>${esc(x[2])}</li>`).join("")}</ul>`,a:[["Open eligibility check",()=>go("elig")]]};
+  if(hit.length&&!has(/stock|camp/))return{h:`<p>${hit.map(x=>esc(x[3])).join("</p><p>")}</p><p class="small">The camp doctor confirms on the day.</p>`,a:[["Open eligibility check",()=>go("elig")]]};
+  if(has(/diabet|sugar/))return{h:"<p>If you take <b>insulin</b>, you usually can't donate. If your diabetes is controlled without insulin, the camp doctor decides on the day. Please tell the doctor at the camp.</p>"};
+  if(has(/blood pressure|\bbp\b|hypertens|pulse/))return{h:"<p>At the camp the nurse checks your pulse (50 to 100 beats/min) and blood pressure (about 100 to 180 over 50 to 100). Controlled blood pressure is often fine, but the doctor decides.</p>"};
+  if(has(/period|menstru/))return{h:"<p>Periods alone are usually not a problem if you feel well and your haemoglobin is above 12.5 g/dL. Eat iron-rich food and drink water. The camp doctor decides.</p>"};
+  if(has(/medicine|medication|tablet|pills?\b/))return{h:"<p>It depends on the medicine. Antibiotics need a 7-day wait after the last dose. For anything else, tell the camp doctor what you take, and they will advise you.</p>"};
+  if(has(/eligib|can i donate|am i allowed|who can donate|criteria|requirement|rules|qualif|age limit|weight limit|haemoglobin|hemoglobin|\bhb\b/)){
+    if(has(/age|old|young/)&&!has(/weight|hemo|haemo|gap|rule|criteria|requirement/))return{h:"<p>Donors must be <b>18 to 65 years</b> old.</p>"};
+    return{h:`<p>The basic rules on this site:</p><ul><li>Age 18 to 65</li><li>Weight above 45 kg</li><li>Haemoglobin above 12.5 g/dL</li><li>At least 90 days since your last donation</li></ul><p>You also need to be healthy that day, with no recent fever, antibiotics, alcohol, tattoo or surgery.</p>`,a:[["Check my eligibility",()=>go("elig")]]};
+  }
+  // process questions
+  if(has(/how long|how much time|duration|how many minutes/))return{h:"<p>The donation itself takes about 10 to 15 minutes. Allow around 45 to 60 minutes in total for registration, screening, donation and a short rest with refreshments.</p>"};
+  if(has(/how often|how many times|gap|again|next donation|frequency/)&&has(/donat|give|gap|again|often|many/))return{h:"<p>Wait at least <b>90 days</b> between donations. Donating too often can lower your iron.</p>"};
+  if(has(/safe|pain|hurt|needle|afraid|scared|fear|side effect|dizz|weak/))return{h:"<p>Donating is safe. A new sterile needle and bag are used for every donor. You may feel a small pinch. Eat before you come, drink plenty of water, rest 10 to 15 minutes afterwards and avoid heavy exercise for the day. Tell the staff if you feel dizzy.</p>"};
+  if(has(/before|prepare|preparation|what to (bring|carry)|bring|carry|id proof|photo id/)&&!has(/camp.*before/))return{h:"<p><b>Before you come:</b></p><ul><li>Eat a light meal and drink water</li><li>Sleep well the night before</li><li>Carry a photo ID and your booking reference</li><li>Skip alcohol for 24 hours</li></ul>"};
+  if(has(/after|aftercare|post|recover/)&&has(/donat|donation|giving/))return{h:"<p><b>After donating:</b> rest for 10 to 15 minutes, have the refreshments, drink extra fluids, avoid heavy exercise and heavy lifting for the day, and keep the bandage on for a few hours.</p>"};
+  if(has(/how (does|do|to).*(donat|work)|donating work|how can i (donate|help)|process|steps|first time|first-time|why donate|benefit/))
+    return{h:`<p><b>How donating works here:</b></p><ul><li><b>1.</b> Check your eligibility</li><li><b>2.</b> Pick a camp and an hour that suits you</li><li><b>3.</b> Book a slot and note your reference</li><li><b>4.</b> At the camp: ID check, quick health screening, donation, short rest</li></ul><p>One donation can help up to three patients.</p>`,a:[["Check eligibility",()=>go("elig")],["See camps",()=>go("camps")]]};
+  // appointments
+  if(has(/cancel/)&&has(/reserv|blood bank|units/))return{h:S.reqs.length?"<p>You can cancel a reservation from <b>My reservations</b>. The units go back to stock.</p>":"<p>You have no blood reservations right now.</p>",a:S.reqs.length?[["Open my reservations",()=>go("reqs")]]:[]};
+  if(has(/my (appointment|booking|slot)|cancel|reschedule|change my slot|booked/)){
+    if(!S.appts.length)return{h:"<p>You have no appointments yet. Want to book one?</p>",a:[["See camps",()=>go("camps")]]};
+    const all=[...seed,...custom].map(c=>({...c,d:pd(c.date)}));
+    return{h:`<p>You have ${S.appts.length} appointment${S.appts.length>1?"s":""}:</p><ul>${S.appts.map(a=>{const c=all.find(x=>x.id===a.camp);return c?`<li>${esc(c.name)}, ${fmtD(c.d)} at ${fmtH(a.h)}${a.ref?" (ref "+a.ref+")":""}</li>`:""}).join("")}</ul><p class="small">You can cancel from the appointments page.</p>`,a:[["Open my appointments",()=>go("mine")]]};
+  }
+  // reservations
+  if(has(/my (request|reservation)|collection code/))return{h:S.reqs.length?`<p>You have ${S.reqs.length} reservation${S.reqs.length>1?"s":""}. Codes: <b>${S.reqs.map(r=>r.code).join(", ")}</b>.</p>`:"<p>You have no blood reservations yet.</p>",a:S.reqs.length?[["Open my reservations",()=>go("reqs")]]:[["Find blood",()=>go("inv")]]};
+  // alert / find donors
+  if(has(/alert|find donors?|need donors?|look for donors?|search donors?|notify donors?/)||(has(/donor/)&&has(/urgent|emergency|nearby|near/)))
+    return{h:`<p>When blood banks can't supply enough, use <b>Find donors urgently</b>. Enter the blood group, units, when it's needed, the hospital and a contact number. Eligible donors nearby (90+ days since last donation) get the alert and reply Accept or Unavailable.</p><p class="small">On this site the alert is a simulation: no real messages are sent.</p>`,a:[["Open donor alert",()=>{if(g)S.ag=g;go("alert")}]]};
+  // organisers
+  if(has(/organi[sz]|create (a )?camp|add (a )?camp|host|arrange|conduct|slot limit|delete camp|mark donat|my camps/))
+    return{h:`<p>To run a camp: open <b>Create a camp</b>, enter the name, date, hours, venue, the donors-per-hour limit and the blood groups needed. Groups running low are ticked for you. Then use <b>My camps</b> to see hourly bookings and tap <i>Mark donated</i> as donors give blood. Each marked donation adds a unit to stock.</p>`,a:[["Create a camp",()=>go("org")],["My camps",()=>go("mycamps")]]};
+  // stock / banks / reserve
+  if(has(/stock|inventory|units|available|availability|blood bank|reserve|order|where (can|do) i (get|find)|need .*blood|blood .*need|looking for blood|require blood|shortage|low\b/)||(g&&has(/blood|have|left|any|looking for|searching|find/)&&!has(/camp|book/))){
+    if(g){const n=S.inv[g],bs=S.banks.filter(b=>b.inv[g]>0).sort((a,b)=>a.km-b.km);
+      return{h:`<p><b>${g}</b>: ${n} unit${n===1?"":"s"} in total (${stat(n)}).</p>${bs.length?`<ul>${bs.map(b=>`<li>${esc(b.name)}, ${b.km} km: <b>${b.inv[g]}</b> unit${b.inv[g]===1?"":"s"}</li>`).join("")}</ul>`:`<p>No bank has ${g} right now.</p>`}`,
+        a:[...(bs.length?[["Reserve "+g,()=>{S.fg=g;go("inv")}]]:[]),...(n<20?[["Alert donors",()=>{S.ag=g;go("alert")}],["Camps needing "+g,()=>{S.g=g;S.f="all";S.m="";S.q="";go("camps")}]]:[])]};}
+    const low=crit().sort((a,b)=>S.inv[a]-S.inv[b]);
+    return{h:low.length?`<p><b>Running low:</b></p><ul>${low.map(x=>`<li><b>${x}</b>: ${S.inv[x]} units (${stat(S.inv[x])})</li>`).join("")}</ul><p>All other groups are well stocked. Tell me a blood group for bank-by-bank details.</p>`:"<p>All blood groups are well stocked right now. Tell me a group for bank-by-bank details.</p>",
+      a:[["Open blood stock",()=>go("inv")],...(low[0]?[["Donate "+low[0],()=>{S.g=low[0];S.f="all";S.m="";S.q="";go("camps")}]]:[])]};
+  }
+  // camps
+  if(has(/camp|drive|book|slot|schedule|appointment|donate|donation|venue|where|when|next|nearest|upcoming|this week|weekend|today|tomorrow/)){
+    let list=camps,lbl="Upcoming camps";
+    const named=camps.find(c=>{const n=c.name.toLowerCase();return t.includes(n)||(n.split(" ")[0].length>4&&t.includes(n.split(" ")[0]))});
+    if(named)return{h:`<p>${campLine(named)}</p><p class="small">${esc(named.desc||"")}</p>`,a:[...(left(named)?[["Book a slot",()=>bookDlg(named.id)]]:[]),["Details & map",()=>detDlg(named.id)]]};
+    if(has(/this week|week/)){list=list.filter(c=>c.d<=day(7));lbl="Camps in the next 7 days"}
+    else if(has(/today/)){list=list.filter(c=>c.d<=day(0));lbl="Camps today"}
+    else if(has(/tomorrow/)){list=list.filter(c=>c.d.getTime()===day(1).getTime());lbl="Camps tomorrow"}
+    if(g){const f=list.filter(c=>!(c.focus||[]).length||c.focus.includes(g));if(f.length){list=f;lbl="Camps that need "+g}else lbl="No camp is asking for "+g+" specifically, so here are all upcoming camps"}
+    if(has(/urgent|most needed|needed most|low/)){list=list.filter(c=>urg(c).length);lbl="Camps with an urgent need"}
+    if(has(/open|available|free|space|spot|slots?/)||has(/book/))list=list.filter(c=>left(c));
+    const nxt=has(/next|nearest|soonest|first/),sh=list.slice(0,nxt?1:3);
+    if(!sh.length)return{h:"<p>I couldn't find a matching camp. Try the camps page and clear the filters.</p>",a:[["Open camps",()=>{S.q="";S.f="all";S.g="";S.m="";go("camps")}]]};
+    return{h:`<p><b>${lbl}</b>${list.length>sh.length?` (showing ${sh.length} of ${list.length})`:""}</p>${sh.map(c=>`<div class="cb-item">${campLine(c)}</div>`).join("")}`,
+      a:[...campActs(sh),["See all camps",()=>{S.q="";S.f="all";S.m="";S.g=g||"";go("camps")}]]};
+  }
+  return{h:`<p>I'm not sure about that one. I can help with eligibility, camps and booking, blood stock, emergencies and organising camps.</p><p class="small">For medical advice, please ask the camp doctor or your own doctor.</p>`,a:[["Am I eligible?",()=>go("elig")],["Upcoming camps",()=>go("camps")],["Blood stock",()=>go("inv")]]};
+}
+window.beatAsk=reply;
+})();
+</script>
+</body>
+</html>
